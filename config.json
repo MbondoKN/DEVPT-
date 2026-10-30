@@ -66,27 +66,38 @@
   "reliefweb": {
     "enabled": true,
     "keywords": [
-      "civil engineer",
-      "structural engineer",
+      "engineer",
+      "engineering",
       "infrastructure",
-      "WASH engineer",
-      "climate resilience",
-      "climate adaptation",
-      "disaster risk",
-      "urban resilience",
-      "programme officer climate",
-      "monitoring and evaluation"
+      "WASH",
+      "water",
+      "climate",
+      "resilience",
+      "adaptation",
+      "disaster",
+      "humanitarian",
+      "development",
+      "programme officer",
+      "project officer",
+      "programme manager",
+      "project manager",
+      "monitoring",
+      "evaluation",
+      "environment",
+      "sustainability",
+      "urban",
+      "construction",
+      "shelter",
+      "livelihoods",
+      "policy",
+      "consultant"
     ]
   },
   "rss_feeds": [
     {
       "name": "UN Careers",
       "url": "https://careers.un.org/jobfeed",
-      "enabled": true
-    },
-    {
-      "name": "ReliefWeb",
-      "url": "https://reliefweb.int/jobs/rss.xml",
+      "type": "uncareers",
       "enabled": true
     }
   ],
@@ -112,6 +123,96 @@
       "international development",
       "humanitarian",
       "infrastructure"
+    ]
+  },
+  "filters": {
+    "home_country": "Kenya",
+    "home_nationality": "kenyan",
+    "home_keywords": [
+      "kenya",
+      "nairobi",
+      "mombasa",
+      "kisumu",
+      "nakuru",
+      "eldoret",
+      "remote",
+      "home-based",
+      "home based",
+      "homebased",
+      "anywhere",
+      "worldwide"
+    ],
+    "allowed_levels": [
+      "P-1",
+      "P-2",
+      "P-3",
+      "NO-A",
+      "NO-B",
+      "NO-C",
+      "JPO",
+      "CON"
+    ],
+    "include_internships": false,
+    "allowed_experience": [
+      "0-2 years",
+      "3-4 years",
+      "5-9 years"
+    ],
+    "max_years_required": 7,
+    "senior_title_terms": [
+      "senior",
+      "director",
+      "head of",
+      "head,",
+      "chief",
+      "principal",
+      "vice president",
+      "executive director",
+      "deputy",
+      "country representative",
+      "representative"
+    ],
+    "relevant_un_families": [
+      "Engineering",
+      "Sustainable Development",
+      "Environmental Affairs",
+      "Programme Management",
+      "Economic Affairs",
+      "HST",
+      "Humanitarian Affairs",
+      "Social Affairs"
+    ],
+    "degree_fields_dev": [
+      "development studies",
+      "international development",
+      "sustainable development",
+      "development economics",
+      "development",
+      "public policy",
+      "public administration",
+      "social science",
+      "humanitarian",
+      "disaster",
+      "climate",
+      "environmental",
+      "environment",
+      "sustainability",
+      "urban planning",
+      "urban development",
+      "geography",
+      "economics",
+      "international relations",
+      "political science"
+    ],
+    "open_nationality_terms": [
+      "kenya",
+      "east africa",
+      "african",
+      "africa",
+      "eac",
+      "all nationalit",
+      "any nationalit",
+      "all countries"
     ]
   }
 }
