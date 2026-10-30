@@ -3,34 +3,95 @@
   "stale_days": 14,
   "profile": "Graduate civil/structural engineer (EBK registered, MIEK) based in Nairobi, Kenya, with a BSc in Civil Engineering and an MSc in International Development (climate focus) in progress. Open to roles in Kenya, East Africa, wider Africa, remote, and international organisations (UN agencies, development banks, NGOs, consultancies).",
   "engineering_terms": [
-    "civil engineer", "structural engineer", "structural design", "geotechnical",
-    "water engineer", "wash engineer", "infrastructure", "bridge", "highway", "roads engineer",
-    "site engineer", "resident engineer", "project engineer", "construction", "revit", "bim",
-    "hydrolog", "drainage", "urban planning", "resilient infrastructure", "engineer"
+    "civil engineer",
+    "structural engineer",
+    "structural design",
+    "geotechnical",
+    "water engineer",
+    "wash engineer",
+    "infrastructure",
+    "bridge",
+    "highway",
+    "roads engineer",
+    "site engineer",
+    "resident engineer",
+    "project engineer",
+    "construction",
+    "revit",
+    "bim",
+    "hydrolog",
+    "drainage",
+    "urban planning",
+    "resilient infrastructure",
+    "engineer"
   ],
   "development_terms": [
-    "international development", "development", "climate", "resilience", "adaptation",
-    "humanitarian", "programme", "program officer", "project officer", "policy",
-    "monitoring and evaluation", "m&e", "mel", "sustainability", "wash", "livelihoods",
-    "displacement", "disaster risk", "green growth", "consultant"
+    "international development",
+    "development",
+    "climate",
+    "resilience",
+    "adaptation",
+    "humanitarian",
+    "programme",
+    "program officer",
+    "project officer",
+    "policy",
+    "monitoring and evaluation",
+    "m&e",
+    "mel",
+    "sustainability",
+    "wash",
+    "livelihoods",
+    "displacement",
+    "disaster risk",
+    "green growth",
+    "consultant"
   ],
   "exclude_terms": [
-    "software engineer", "devops", "mechanical engineer", "electrical engineer",
-    "data engineer", "sales engineer", "nurse", "driver", "security guard"
+    "software engineer",
+    "devops",
+    "mechanical engineer",
+    "electrical engineer",
+    "data engineer",
+    "sales engineer",
+    "nurse",
+    "driver",
+    "security guard",
+    "business development",
+    "developer",
+    "software",
+    "sales",
+    "marketing"
   ],
   "reliefweb": {
     "enabled": true,
     "keywords": [
-      "civil engineer", "structural engineer", "infrastructure", "WASH engineer",
-      "climate resilience", "climate adaptation", "disaster risk", "urban resilience",
-      "programme officer climate", "monitoring and evaluation"
+      "civil engineer",
+      "structural engineer",
+      "infrastructure",
+      "WASH engineer",
+      "climate resilience",
+      "climate adaptation",
+      "disaster risk",
+      "urban resilience",
+      "programme officer climate",
+      "monitoring and evaluation"
     ]
   },
   "rss_feeds": [
-    { "name": "UNjobs", "url": "https://unjobs.org/rss", "enabled": true }
+    {
+      "name": "UN Careers",
+      "url": "https://careers.un.org/jobfeed",
+      "enabled": true
+    },
+    {
+      "name": "ReliefWeb",
+      "url": "https://reliefweb.int/jobs/rss.xml",
+      "enabled": true
+    }
   ],
   "agent": {
-    "enabled": true,
+    "enabled": false,
     "max_results_per_search": 15,
     "max_web_searches_per_topic": 6,
     "searches": [
@@ -39,6 +100,18 @@
       "international development jobs with a climate focus (climate resilience, adaptation, disaster risk, climate finance) based in Kenya, Africa, or remote",
       "UN, World Bank, African Development Bank, UNDP, UNEP, UN-Habitat, FAO, IOM, UNICEF openings for engineers or development professionals in Nairobi or Africa",
       "fellowships, graduate programmes and young professional programmes in international development and climate for African early-career professionals"
+    ]
+  },
+  "remotive": {
+    "enabled": true,
+    "search_terms": [
+      "civil engineer",
+      "structural engineer",
+      "climate",
+      "sustainability",
+      "international development",
+      "humanitarian",
+      "infrastructure"
     ]
   }
 }

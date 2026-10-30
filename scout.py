@@ -5,7 +5,8 @@ Daily job scout for civil engineering + international development roles.
 Sources (all optional, each skipped cleanly if not configured):
   1. ReliefWeb API      - needs RELIEFWEB_APPNAME (free to register)
   2. RSS / Atom feeds   - listed in config.json
-  3. Claude web agent   - needs ANTHROPIC_API_KEY; searches the open web
+  3. Remotive API       - free, no key (remote jobs)
+  4. Claude web agent   - OPTIONAL, needs ANTHROPIC_API_KEY (paid); skipped if unset
 
 Output:
   data/jobs.json   persistent store (first_seen / last_seen per job)
@@ -81,7 +82,8 @@ def has_any(text, terms):
 
 
 def is_relevant(job):
-    text = f"{job.get('title', '')} {job.get('summary', '')}"
+    title_only = job.get("source") == "Remotive"
+    text = job.get("title", "") if title_only else f"{job.get('title', '')} {job.get('summary', '')}"
     if has_any(job.get("title", ""), CFG["exclude_terms"]):
         return False
     return has_any(text, CFG["engineering_terms"]) or has_any(text, CFG["development_terms"])
@@ -199,7 +201,32 @@ def collect_rss():
     return out
 
 
-# ---------------------------------------------------------------- source 3: Claude web agent
+# ---------------------------------------------------------------- source 3: Remotive (free, no key)
+def collect_remotive():
+    cfg = CFG.get("remotive", {})
+    if not cfg.get("enabled"):
+        return []
+    out = []
+    for term in cfg.get("search_terms", []):
+        try:
+            r = requests.get("https://remotive.com/api/remote-jobs", params={"search": term},
+                             headers=HEADERS, timeout=45)
+            r.raise_for_status()
+            for j in r.json().get("jobs", []):
+                where = j.get("candidate_required_location") or ""
+                out.append({
+                    "title": j.get("title", ""), "organization": j.get("company_name", ""),
+                    "location": f"Remote ({where})" if where else "Remote",
+                    "url": j.get("url", ""), "deadline": None, "posted": to_date(j.get("publication_date")),
+                    "summary": strip_html(j.get("description", ""))[:160], "source": "Remotive",
+                })
+        except Exception as e:
+            log(f"Remotive '{term}': failed ({e})")
+    log(f"Remotive: {len(out)} raw results")
+    return out
+
+
+# ---------------------------------------------------------------- source 4: Claude web agent (optional, paid)
 def extract_json_array(text):
     start, end = text.find("["), text.rfind("]")
     if start == -1 or end <= start:
@@ -367,7 +394,7 @@ def main():
         return
 
     store = load_store()
-    found = collect_reliefweb() + collect_rss() + collect_agent()
+    found = collect_reliefweb() + collect_rss() + collect_remotive() + collect_agent()
     new = merge(store, found)
     prune(store)
     STORE.parent.mkdir(exist_ok=True)
