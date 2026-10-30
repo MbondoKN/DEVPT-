@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open roles: civil engineering and international development</title>
+<style>
+  :root {
+    --bg: #eef1f3; --surface: #ffffff; --ink: #16222b; --muted: #5b6b77;
+    --rule: #d3dae0; --accent: #1f4e79; --new: #c77d0a; --soon: #b3261e;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1519; --surface: #172027; --ink: #e4eaee; --muted: #93a3af;
+      --rule: #2a3741; --accent: #7fb2db; --new: #e0a53a; --soon: #f2867f;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 1rem; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  }
+  main { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.75rem; line-height: 1.2; margin: 0 0 .35rem; font-weight: 650; letter-spacing: -.01em; }
+  .meta { color: var(--muted); margin: 0 0 1.5rem; font-variant-numeric: tabular-nums; }
+  .meta strong { color: var(--ink); font-weight: 600; }
+  .controls { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center; margin-bottom: 1rem; }
+  .controls input[type=search], .controls select {
+    font: inherit; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--rule); border-radius: 6px; padding: .5rem .7rem;
+  }
+  .controls input[type=search] { flex: 1 1 260px; min-width: 200px; }
+  .controls label { display: inline-flex; gap: .4rem; align-items: center; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; min-width: 980px; }
+  th, td { text-align: left; padding: .65rem .85rem; vertical-align: top; border-bottom: 1px solid var(--rule); }
+  tbody tr:last-child td { border-bottom: 0; }
+  th { font-weight: 600; font-size: .85rem; color: var(--muted); white-space: nowrap; background: var(--surface); position: sticky; top: 0; }
+  th button { all: unset; cursor: pointer; display: inline-flex; gap: .3rem; align-items: center; }
+  th button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  th[aria-sort="ascending"] button::after { content: "\2191"; }
+  th[aria-sort="descending"] button::after { content: "\2193"; }
+  td.title a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  td.title a:hover { text-decoration: underline; }
+  td.title .sum { display: block; color: var(--muted); font-size: .85rem; font-weight: 400; margin-top: .15rem; max-width: 60ch; }
+  td.date { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .soon { color: var(--soon); font-size: .85rem; display: block; }
+  tr.is-new td:first-child { box-shadow: inset 3px 0 0 var(--new); }
+  .tag-new { color: var(--new); font-weight: 650; font-size: .85rem; margin-right: .4rem; }
+  .empty { padding: 2.5rem 1rem; text-align: center; color: var(--muted); }
+  .foot { color: var(--muted); font-size: .85rem; margin-top: 1rem; }
+  .foot a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Open roles: civil engineering and international development</h1>
+  <p class="meta" id="meta"></p>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="Search title, organisation or location" aria-label="Search jobs">
+    <select id="cat" aria-label="Filter by category"><option value="">All categories</option></select>
+    <select id="reg" aria-label="Filter by region"><option value="">All regions</option></select>
+    <label><input type="checkbox" id="newonly"> New today only</label>
+  </div>
+
+  <div class="wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-key="title" aria-sort="none"><button type="button">Role</button></th>
+          <th data-key="organization" aria-sort="none"><button type="button">Organisation</button></th>
+          <th data-key="location" aria-sort="none"><button type="button">Location</button></th>
+          <th data-key="category" aria-sort="none"><button type="button">Category</button></th>
+          <th data-key="deadline" aria-sort="none"><button type="button">Deadline</button></th>
+          <th data-key="first_seen" aria-sort="none"><button type="button">Found</button></th>
+          <th data-key="source" aria-sort="none"><button type="button">Source</button></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden>No roles match these filters. Clear the search or choose All categories.</div>
+  </div>
+  <p class="foot">Listings are collected automatically. Open the posting and confirm the deadline before you apply. <a href="jobs.csv">Download CSV</a></p>
+</main>
+
+<script>
+const JOBS = [];
+const UPDATED = "2026-10-30";
+const NEW_COUNT = 0;
+
+const $ = id => document.getElementById(id);
+const state = { key: null, dir: 1 };
+
+function parseDate(s) { if (!s) return null; const [y, m, d] = s.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)); }
+const todayUTC = parseDate(UPDATED);
+function fmt(s) {
+  const d = parseDate(s); if (!d) return "";
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: d.getUTCFullYear() === todayUTC.getUTCFullYear() ? undefined : "numeric", timeZone: "UTC" });
+}
+function daysLeft(s) { const d = parseDate(s); return d ? Math.round((d - todayUTC) / 86400000) : null; }
+
+function fillSelect(el, values) {
+  [...new Set(values)].filter(Boolean).sort().forEach(v => { const o = document.createElement("option"); o.value = o.textContent = v; el.appendChild(o); });
+}
+fillSelect($("cat"), JOBS.map(j => j.category));
+fillSelect($("reg"), JOBS.map(j => j.region));
+
+$("meta").innerHTML = `<strong>${JOBS.length}</strong> open roles, <strong>${NEW_COUNT}</strong> new today. Updated ${fmt(UPDATED)}.`;
+
+function cell(text, cls) { const td = document.createElement("td"); if (cls) td.className = cls; td.textContent = text || ""; return td; }
+
+function render() {
+  const q = $("q").value.trim().toLowerCase();
+  let list = JOBS.filter(j =>
+    (!q || [j.title, j.organization, j.location, j.summary].join(" ").toLowerCase().includes(q)) &&
+    (!$("cat").value || j.category === $("cat").value) &&
+    (!$("reg").value || j.region === $("reg").value) &&
+    (!$("newonly").checked || j.is_new));
+  if (state.key) {
+    const k = state.key;
+    list = [...list].sort((a, b) => {
+      const av = a[k] || "\uffff", bv = b[k] || "\uffff";
+      return av.localeCompare(bv) * state.dir;
+    });
+  }
+  const tbody = $("rows"); tbody.replaceChildren();
+  list.forEach(j => {
+    const tr = document.createElement("tr"); if (j.is_new) tr.className = "is-new";
+    const t = document.createElement("td"); t.className = "title";
+    if (j.is_new) { const n = document.createElement("span"); n.className = "tag-new"; n.textContent = "New"; t.appendChild(n); }
+    const a = document.createElement("a"); a.href = j.url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = j.title; t.appendChild(a);
+    if (j.summary) { const s = document.createElement("span"); s.className = "sum"; s.textContent = j.summary; t.appendChild(s); }
+    tr.appendChild(t);
+    tr.appendChild(cell(j.organization));
+    tr.appendChild(cell(j.location));
+    tr.appendChild(cell(j.category));
+    const dl = cell(j.deadline ? fmt(j.deadline) : "Not stated", "date");
+    const left = daysLeft(j.deadline);
+    if (left !== null && left >= 0 && left <= 7) { const s = document.createElement("span"); s.className = "soon"; s.textContent = left === 0 ? "Closes today" : `${left} day${left === 1 ? "" : "s"} left`; dl.appendChild(s); }
+    tr.appendChild(dl);
+    tr.appendChild(cell(fmt(j.first_seen), "date"));
+    tr.appendChild(cell(j.source));
+    tbody.appendChild(tr);
+  });
+  $("empty").hidden = list.length > 0;
+}
+
+document.querySelectorAll("th[data-key]").forEach(th => th.querySelector("button").addEventListener("click", () => {
+  const k = th.dataset.key;
+  state.dir = state.key === k ? -state.dir : 1; state.key = k;
+  document.querySelectorAll("th[data-key]").forEach(x => x.setAttribute("aria-sort", "none"));
+  th.setAttribute("aria-sort", state.dir === 1 ? "ascending" : "descending");
+  render();
+}));
+["q", "cat", "reg", "newonly"].forEach(id => $(id).addEventListener("input", render));
+render();
+</script>
+</body>
+</html>
