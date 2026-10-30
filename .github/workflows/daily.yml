@@ -12,36 +12,7 @@ jobs:
   scout:
     runs-on: ubuntu-latest
     steps:
-      - uses: actioname: Daily job scout
-
-on:
-  schedule:
-    - cron: "0 5 * * *"
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  scout:
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install -r requirements.txt
-      - run: python scout.py
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          RELIEFWEB_APPNAME: ${{ secrets.RELIEFWEB_APPNAME }}
-      - name: Commit updated table
-        run: |
-          git config user.name "job-scout-bot"
-          git config user.email "job-scout-bot@users.noreply.github.com"
-          git add data docs
-          git diff --cached --quiet || git commit -m "Update jobs $(date -u +%F)"
-          git pushns/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
