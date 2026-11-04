@@ -36,7 +36,7 @@
   .controls label { display: inline-flex; gap: .4rem; align-items: center; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
-  table { border-collapse: collapse; width: 100%; min-width: 980px; }
+  table { border-collapse: collapse; width: 100%; min-width: 1400px; }
   th, td { text-align: left; padding: .65rem .85rem; vertical-align: top; border-bottom: 1px solid var(--rule); }
   tbody tr:last-child td { border-bottom: 0; }
   th { font-weight: 600; font-size: .85rem; color: var(--muted); white-space: nowrap; background: var(--surface); position: sticky; top: 0; }
@@ -72,10 +72,14 @@
     <table>
       <thead>
         <tr>
+          <th data-key="match" aria-sort="descending"><button type="button">Match</button></th>
           <th data-key="title" aria-sort="none"><button type="button">Role</button></th>
           <th data-key="organization" aria-sort="none"><button type="button">Organisation</button></th>
           <th data-key="location" aria-sort="none"><button type="button">Location</button></th>
           <th data-key="category" aria-sort="none"><button type="button">Category</button></th>
+          <th data-key="level" aria-sort="none"><button type="button">Level</button></th>
+          <th data-key="degree_fit" aria-sort="none"><button type="button">Degree fit</button></th>
+          <th data-key="visa" aria-sort="none"><button type="button">Visa</button></th>
           <th data-key="deadline" aria-sort="none"><button type="button">Deadline</button></th>
           <th data-key="first_seen" aria-sort="none"><button type="button">Found</button></th>
           <th data-key="source" aria-sort="none"><button type="button">Source</button></th>
@@ -85,7 +89,7 @@
     </table>
     <div class="empty" id="empty" hidden>No roles match these filters. Clear the search or choose All categories.</div>
   </div>
-  <p class="foot">Listings are collected automatically. Open the posting and confirm the deadline before you apply. <a href="jobs.csv">Download CSV</a></p>
+  <p class="foot">Listings are collected automatically. Open the posting and confirm the deadline before you apply. <a href="jobs.csv">Download CSV</a>. Remote listings via Remotive, Jobicy, Himalayas, RemoteOK and We Work Remotely.</p>
 </main>
 
 <script>
@@ -94,7 +98,7 @@ const UPDATED = "__UPDATED__";
 const NEW_COUNT = __NEW_COUNT__;
 
 const $ = id => document.getElementById(id);
-const state = { key: null, dir: 1 };
+const state = { key: "match", dir: -1 };
 
 function parseDate(s) { if (!s) return null; const [y, m, d] = s.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d)); }
 const todayUTC = parseDate(UPDATED);
@@ -124,6 +128,7 @@ function render() {
   if (state.key) {
     const k = state.key;
     list = [...list].sort((a, b) => {
+      if (k === "match") return ((a.match || 0) - (b.match || 0)) * state.dir;
       const av = a[k] || "\uffff", bv = b[k] || "\uffff";
       return av.localeCompare(bv) * state.dir;
     });
@@ -131,6 +136,7 @@ function render() {
   const tbody = $("rows"); tbody.replaceChildren();
   list.forEach(j => {
     const tr = document.createElement("tr"); if (j.is_new) tr.className = "is-new";
+    tr.appendChild(cell(`${j.match || 0}%`, "date"));
     const t = document.createElement("td"); t.className = "title";
     if (j.is_new) { const n = document.createElement("span"); n.className = "tag-new"; n.textContent = "New"; t.appendChild(n); }
     const a = document.createElement("a"); a.href = j.url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = j.title; t.appendChild(a);
@@ -139,6 +145,11 @@ function render() {
     tr.appendChild(cell(j.organization));
     tr.appendChild(cell(j.location));
     tr.appendChild(cell(j.category));
+    tr.appendChild(cell(j.level));
+    const dfit = cell(j.degree_fit);
+    dfit.title = j.verified === "Full text" ? "Checked against the full job text" : "The source gives no description: check degree, language and visa terms on the posting";
+    tr.appendChild(dfit);
+    tr.appendChild(cell(j.visa));
     const dl = cell(j.deadline ? fmt(j.deadline) : "Not stated", "date");
     const left = daysLeft(j.deadline);
     if (left !== null && left >= 0 && left <= 7) { const s = document.createElement("span"); s.className = "soon"; s.textContent = left === 0 ? "Closes today" : `${left} day${left === 1 ? "" : "s"} left`; dl.appendChild(s); }
